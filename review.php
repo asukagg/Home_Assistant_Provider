@@ -38,7 +38,7 @@ if (is_post()) {
             [$rating, $comment, $booking["provider_id"], $booking_id, $_SESSION["user_id"]]
         );
         if ($stmt) {
-            add_notification($conn, (int)$booking["provider_id"], "New review received.");
+            add_notification($conn, (int)$booking["provider_id"], "Review given.");
             set_flash("success", "Review submitted.");
             redirect("bookings.php");
         } else {
@@ -58,4 +58,4 @@ if (is_post()) {
         <button type="submit">Submit Review</button>
     </form>
 </div>
-<?php require_once __DIR__ . "/includes/footer.php"; ?>
+

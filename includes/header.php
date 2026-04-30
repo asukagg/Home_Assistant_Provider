@@ -25,35 +25,39 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <nav class="nav">
             <div class="nav-left">
                 <button type="button" class="back-button" onclick="history.back()">く</button>
-                <a href="index.php">Home</a>
+                <!-- <a href="index.php">Home</a> -->
 
                 <?php if ($user): ?>
+                    <?php if (is_admin()): ?>
                     <a href="dashboard.php">Dashboard</a>
+                    <?php endif; ?>
                     <a href="services.php">Services</a>
                     <a href="providers.php">Providers</a>
+                    <?php if (is_customer()): ?>
                     <a href="notifications.php">Notifications</a>
-
+                    <?php endif; ?>
                     <?php if (is_customer()): ?>
                         <a href="bookings.php">My Bookings</a>
                     <?php endif; ?>
-
+                    <?php if (is_customer()): ?>
+                    <a href="favourites.php">Favourites</a>
+                    <?php endif; ?>
                     <?php if (is_provider()): ?>
                         <a href="provider_profile.php">My Profile</a>
                         <a href="provider_bookings.php">Requests</a>
-                    <?php endif; ?>
-
-                    <?php if (is_admin()): ?>
-                        <a href="admin.php">Admin</a>
+                        <a href="notifications.php">Notifications</a>
+                        
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
 
             <div class="nav-right">
                 <?php if ($user): ?>
-                    <?php if (is_customer()): ?>
+                    <?php if (!is_admin()): ?>
                         <a href="history.php">History</a>
                     <?php endif; ?>
-                    <a href="logout.php">Logout</a>
+                
+                    <a href="logout.php">Logout (<?php echo e($user["name"] ?? "User"); ?>)</a>
                 <?php else: ?>
                     <a href="login.php">Login</a>
                     <a href="register.php">Register</a>

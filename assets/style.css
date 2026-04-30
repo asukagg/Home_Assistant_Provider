@@ -150,6 +150,100 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
+.chart-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    margin-top: 16px;
+}
+
+.chart-card {
+    padding: 16px;
+    border-radius: var(--radius);
+    background: var(--card);
+    border: 1px solid var(--border);
+}
+
+.pie-chart {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    margin: 16px auto 12px;
+}
+
+.pie-legend {
+    display: grid;
+    gap: 8px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+.histogram {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(4, 1fr);
+    align-items: end;
+    height: 220px;
+    padding: 12px 8px;
+}
+
+.histogram-bar {
+    background: var(--chart-3);
+    border-radius: 8px 8px 4px 4px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 6px;
+    color: var(--primary-foreground);
+    font-size: 12px;
+}
+
+.histogram-bar:nth-child(1) {
+    background: var(--chart-1);
+}
+
+.histogram-bar:nth-child(2) {
+    background: var(--chart-2);
+}
+
+.histogram-bar:nth-child(3) {
+    background: var(--chart-3);
+}
+
+.histogram-bar:nth-child(4) {
+    background: var(--chart-4);
+}
+
+.stat-grid {
+    display: grid;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.stat-card {
+    padding: 12px;
+    border-radius: calc(var(--radius) - 4px);
+    background: var(--card);
+    border: 1px solid var(--border);
+}
+
+.stat-bar {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--primary);
+    margin-top: 8px;
+}
+
 form {
     display: grid;
     gap: 12px;
@@ -188,6 +282,42 @@ button.secondary {
     background: var(--secondary);
     color: var(--secondary-foreground);
     border-color: var(--border);
+}
+
+.inline-form {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0;
+}
+
+.button-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    text-decoration: none;
+    border: 1px solid transparent;
+    margin-right: 6px;
+}
+
+.button-link:hover {
+    background: var(--sidebar-accent);
+    color: var(--sidebar-accent-foreground);
+}
+
+.review-list {
+    margin: 10px 0;
+    display: grid;
+    gap: 6px;
+}
+
+.review-list ul {
+    margin: 6px 0 0;
+    padding-left: 18px;
 }
 
 .back-button {

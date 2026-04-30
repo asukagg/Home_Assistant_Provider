@@ -60,4 +60,4 @@ if (is_post()) {
         <button type="submit">Submit Request</button>
     </form>
 </div>
-<?php require_once __DIR__ . "/includes/footer.php"; ?>
+

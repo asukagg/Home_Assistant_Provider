@@ -2,7 +2,14 @@
 require_once __DIR__ . "/includes/header.php";
 
 if (isset($_SESSION["user_id"])) {
-    redirect("dashboard.php");
+    $role = $_SESSION["role"] ?? "customer";
+    if ($role === "admin") {
+        redirect("dashboard.php");
+    } elseif ($role === "provider") {
+        redirect("provider_bookings.php");
+    } else {
+        redirect("services.php");
+    }
 }
 
 if (is_post()) {
@@ -37,7 +44,13 @@ if (is_post()) {
                     }
                     $_SESSION["role"] = $role;
                     $_SESSION["name"] = $user["name"];
-                    redirect("dashboard.php");
+                    if ($role === "admin") {
+                        redirect("dashboard.php");
+                    } elseif ($role === "provider") {
+                        redirect("provider_bookings.php");
+                    } else {
+                        redirect("services.php");
+                    }
                 } else {
                     set_flash("error", "Invalid password.");
                 }
@@ -58,4 +71,4 @@ if (is_post()) {
         <button type="submit">Login</button>
     </form>
 </div>
-<?php require_once __DIR__ . "/includes/footer.php"; ?>
+

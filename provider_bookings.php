@@ -33,7 +33,7 @@ if (is_post()) {
 
 $stmt = db_query(
     $conn,
-    "SELECT b.*, s.service_category, u.name AS customer_name
+    "SELECT b.*, s.service_category, u.name AS customer_name, u.phone AS customer_phone, u.address AS customer_address
      FROM booking b
      LEFT JOIN service s ON s.service_id = b.service_id
      LEFT JOIN users u ON u.user_id = b.customer_id
@@ -51,7 +51,10 @@ $bookings = $stmt ? $stmt->get_result() : false;
             <thead>
                 <tr>
                     <th>Customer</th>
+                    <th>Phone</th>
+                    <th>Address</th>
                     <th>Service</th>
+                    <th>Notes</th>
                     <th>Date</th>
                     <th>Time</th>
                     <th>Status</th>
@@ -62,7 +65,10 @@ $bookings = $stmt ? $stmt->get_result() : false;
                 <?php while ($row = $bookings->fetch_assoc()): ?>
                     <tr>
                         <td><?php echo e($row["customer_name"]); ?></td>
+                        <td><?php echo e($row["customer_phone"]); ?></td>
+                        <td><?php echo e($row["customer_address"]); ?></td>
                         <td><?php echo e($row["service_category"]); ?></td>
+                        <td><?php echo e($row["notes"]); ?></td>
                         <td><?php echo e($row["date"]); ?></td>
                         <td><?php echo e($row["time"]); ?></td>
                         <td><?php echo e($row["booking_status"]); ?></td>
@@ -87,4 +93,4 @@ $bookings = $stmt ? $stmt->get_result() : false;
         <p>No booking requests.</p>
     <?php endif; ?>
 </div>
-<?php require_once __DIR__ . "/includes/footer.php"; ?>
+

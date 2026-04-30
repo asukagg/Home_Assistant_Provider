@@ -10,7 +10,7 @@ $booking_id = isset($_GET["booking_id"]) ? (int)$_GET["booking_id"] : 0;
 
 $stmt = db_query(
     $conn,
-    "SELECT b.booking_id, b.booking_status, s.price_per_hour, s.service_category
+    "SELECT b.booking_id, b.booking_status, b.provider_id, s.price_per_hour, s.service_category
      FROM booking b
      LEFT JOIN service s ON s.service_id = b.service_id
      WHERE b.booking_id = ? AND b.customer_id = ?",
@@ -26,10 +26,10 @@ if (!$booking) {
 
 if (is_post()) {
     $method = $_POST["method"] ?? "";
-    $transaction_ref = trim($_POST["transaction_ref"] ?? "");
+    $transaction_ref = bin2hex(random_bytes(8));
     $amount = (float)($booking["price_per_hour"] ?? 0);
 
-    if ($method === "" || $transaction_ref === "") {
+    if ($method === "") {
         set_flash("error", "Please enter payment details.");
     } else {
         $stmt = db_query(
@@ -40,6 +40,9 @@ if (is_post()) {
         );
         if ($stmt) {
             add_notification($conn, $_SESSION["user_id"], "Payment successful.");
+            if (!empty($booking["provider_id"])) {
+                add_notification($conn, (int)$booking["provider_id"], "Payment received.");
+            }
             set_flash("success", "Payment recorded.");
             redirect("bookings.php");
         } else {
@@ -56,13 +59,9 @@ if (is_post()) {
         <label>Payment Method</label>
         <select name="method" required>
             <option value="card">Card</option>
-            <option value="bkash">bKash</option>
-            <option value="nagad">Nagad</option>
             <option value="cash">Cash</option>
         </select>
-        <label>Transaction ID</label>
-        <input type="text" name="transaction_ref" required>
         <button type="submit">Pay Now</button>
     </form>
 </div>
-<?php require_once __DIR__ . "/includes/footer.php"; ?>
+

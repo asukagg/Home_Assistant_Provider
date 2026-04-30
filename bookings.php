@@ -82,4 +82,4 @@ $bookings = $stmt ? $stmt->get_result() : false;
         <p>No bookings yet.</p>
     <?php endif; ?>
 </div>
-<?php require_once __DIR__ . "/includes/footer.php"; ?>
+

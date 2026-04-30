@@ -51,6 +51,18 @@ $stmt = db_query(
     [$_SESSION["user_id"]]
 );
 $my_services = $stmt ? $stmt->get_result() : false;
+
+$stmt = db_query(
+    $conn,
+    "SELECT r.review_date, r.rating, r.comment, c.name AS customer_name
+     FROM review r
+     LEFT JOIN users c ON c.user_id = r.customer_id
+     WHERE r.provider_id = ?
+     ORDER BY r.review_date DESC",
+    "i",
+    [$_SESSION["user_id"]]
+);
+$reviews = $stmt ? $stmt->get_result() : false;
 ?>
 <div class="grid">
     <div class="card">
@@ -100,4 +112,32 @@ $my_services = $stmt ? $stmt->get_result() : false;
         <?php endif; ?>
     </div>
 </div>
-<?php require_once __DIR__ . "/includes/footer.php"; ?>
+
+<div class="card">
+    <h2>Customer Reviews</h2>
+    <?php if ($reviews && $reviews->num_rows > 0): ?>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Rating</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($review = $reviews->fetch_assoc()): ?>
+                    <tr>
+                        <td><?php echo e($review["review_date"]); ?></td>
+                        <td><?php echo e($review["customer_name"]); ?></td>
+                        <td><?php echo e($review["rating"]); ?></td>
+                        <td><?php echo e($review["comment"]); ?></td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    <?php else: ?>
+        <p>No reviews yet.</p>
+    <?php endif; ?>
+</div>
+
