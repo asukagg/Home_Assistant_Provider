@@ -94,11 +94,34 @@ if (is_post()) {
             <option value="customer">Customer</option>
             <option value="provider">Service Provider</option>
         </select>
-        <label>NID Number (providers only)</label>
+        <div id="providerFields" style="display:none; margin-top:10px;">
+        <label>NID Number</label>
         <input type="text" name="nid_number">
+
         <label>NID File (jpg, png, pdf)</label>
         <input type="file" name="nid_file">
+</div>
+
         <button type="submit">Create Account</button>
     </form>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const roleSelect = document.querySelector("select[name='role']");
+    const providerFields = document.getElementById("providerFields");
+
+    function toggleFields() {
+        if (roleSelect.value === "provider") {
+            providerFields.style.display = "block";
+        } else {
+            providerFields.style.display = "none";
+        }
+    }
+
+    roleSelect.addEventListener("change", toggleFields);
+    toggleFields(); // run on page load
+});
+</script>
+
 <?php require_once __DIR__ . "/includes/footer.php"; ?>
