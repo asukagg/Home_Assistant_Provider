@@ -31,23 +31,26 @@ if (is_post()) {
 $payment_total = (float)($conn->query("SELECT SUM(amount) AS total FROM payment")->fetch_assoc()["total"] ?? 0);
 $payment_count = (int)($conn->query("SELECT COUNT(*) AS total FROM payment")->fetch_assoc()["total"] ?? 0);
 
+$customer_count = (int)($conn->query("SELECT COUNT(*) AS total FROM users WHERE role = 'customer'")->fetch_assoc()["total"] ?? 0);
+$provider_count = (int)($conn->query("SELECT COUNT(*) AS total FROM users WHERE role = 'provider'")->fetch_assoc()["total"] ?? 0);
+$booking_count = (int)($conn->query("SELECT COUNT(*) AS total FROM booking")->fetch_assoc()["total"] ?? 0);
+
 $stats = [
-    "users" => (int)($conn->query("SELECT COUNT(*) AS total FROM users")->fetch_assoc()["total"] ?? 0),
-    "providers" => (int)($conn->query("SELECT COUNT(*) AS total FROM users WHERE role = 'provider'")->fetch_assoc()["total"] ?? 0),
-    "bookings" => (int)($conn->query("SELECT COUNT(*) AS total FROM booking")->fetch_assoc()["total"] ?? 0),
+    "customers" => $customer_count,
+    "providers" => $provider_count,
+    "bookings" => $booking_count,
     "payments" => $payment_count,
 ];
 
-$total_stats = max(1, array_sum($stats));
-$users_deg = ($stats["users"] / $total_stats) * 360;
-$providers_deg = ($stats["providers"] / $total_stats) * 360;
-$bookings_deg = ($stats["bookings"] / $total_stats) * 360;
-$payments_deg = ($stats["payments"] / $total_stats) * 360;
+$pie_total = $customer_count + $provider_count;
+$customer_pct = $pie_total > 0 ? (int)round(($customer_count / $pie_total) * 100) : 0;
+$provider_pct = $pie_total > 0 ? 100 - $customer_pct : 0;
 
-$users_end = $users_deg;
-$providers_end = $users_end + $providers_deg;
-$bookings_end = $providers_end + $bookings_deg;
-$payments_end = $bookings_end + $payments_deg;
+$customer_deg = $pie_total > 0 ? ($customer_count / $pie_total) * 360 : 0;
+$provider_deg = $pie_total > 0 ? 360 - $customer_deg : 0;
+
+$customer_end = $customer_deg;
+$provider_end = $customer_end + $provider_deg;
 
 $max_stat = max(1, (int)max($stats));
 $users = $conn->query("SELECT user_id, name, email, phone, role, verification_status, nid_file FROM users ORDER BY user_id DESC");
@@ -55,34 +58,31 @@ $users = $conn->query("SELECT user_id, name, email, phone, role, verification_st
 <div class="card">
     <h2>Admin Dashboard</h2>
     <div class="grid">
-        <div class="card">Total Users: <?php echo e($stats["users"]); ?></div>
+        <div class="card">Customers: <?php echo e($stats["customers"]); ?></div>
         <div class="card">Providers: <?php echo e($stats["providers"]); ?></div>
         <div class="card">Bookings: <?php echo e($stats["bookings"]); ?></div>
         <div class="card">Payments: <?php echo e(number_format($payment_total, 2)); ?></div>
     </div>
     <div class="chart-grid">
         <div class="chart-card">
-            <h3>Overview (Pie)</h3>
+            <h3>Overview (Users)</h3>
             <div class="pie-chart" style="background: conic-gradient(
-                var(--chart-1) 0deg <?php echo $users_end; ?>deg,
-                var(--chart-2) <?php echo $users_end; ?>deg <?php echo $providers_end; ?>deg,
-                var(--chart-3) <?php echo $providers_end; ?>deg <?php echo $bookings_end; ?>deg,
-                var(--chart-4) <?php echo $bookings_end; ?>deg <?php echo $payments_end; ?>deg
-            );"></div>
+                var(--chart-1) 0deg <?php echo $customer_end; ?>deg,
+                var(--chart-2) <?php echo $customer_end; ?>deg <?php echo $provider_end; ?>deg
+            );">
+            </div>
             <div class="pie-legend">
-                <div class="legend-item"><span class="legend-swatch" style="background: var(--chart-1);"></span>Users</div>
-                <div class="legend-item"><span class="legend-swatch" style="background: var(--chart-2);"></span>Providers</div>
-                <div class="legend-item"><span class="legend-swatch" style="background: var(--chart-3);"></span>Bookings</div>
-                <div class="legend-item"><span class="legend-swatch" style="background: var(--chart-4);"></span>Payments</div>
+                <div class="legend-item"><span class="legend-swatch" style="background: var(--chart-1);"></span>Customers <?php echo e($customer_pct); ?>%</div>
+                <div class="legend-item"><span class="legend-swatch" style="background: var(--chart-2);"></span>Providers <?php echo e($provider_pct); ?>%</div>
             </div>
         </div>
         <div class="chart-card">
             <h3>Totals (Histogram)</h3>
             <div class="histogram">
-                <div class="histogram-bar" style="height: <?php echo (int)(($stats["users"] / $max_stat) * 100); ?>%;"><span>Users</span></div>
-                <div class="histogram-bar" style="height: <?php echo (int)(($stats["providers"] / $max_stat) * 100); ?>%;"><span>Providers</span></div>
-                <div class="histogram-bar" style="height: <?php echo (int)(($stats["bookings"] / $max_stat) * 100); ?>%;"><span>Bookings</span></div>
-                <div class="histogram-bar" style="height: <?php echo (int)(($stats["payments"] / $max_stat) * 100); ?>%;"><span>Payments</span></div>
+                <div class="histogram-bar" style="height: <?php echo (int)(($stats["customers"] / $max_stat) * 100); ?>%;"><span>Customers<br><?php echo e($stats["customers"]); ?></span></div>
+                <div class="histogram-bar" style="height: <?php echo (int)(($stats["providers"] / $max_stat) * 100); ?>%;"><span>Providers<br><?php echo e($stats["providers"]); ?></span></div>
+                <div class="histogram-bar" style="height: <?php echo (int)(($stats["bookings"] / $max_stat) * 100); ?>%;"><span>Bookings<br><?php echo e($stats["bookings"]); ?></span></div>
+                <div class="histogram-bar" style="height: <?php echo (int)(($stats["payments"] / $max_stat) * 100); ?>%;"><span>Payments<br><?php echo e($stats["payments"]); ?></span></div>
             </div>
         </div>
     </div>
